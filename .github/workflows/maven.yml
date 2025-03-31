@@ -3,79 +3,102 @@ name: Automation Exercise Tests
 on:
   push:
     branches:
-      - master   # run on master branch push
+      - master
   pull_request:
     branches:
-      - master   # run on pull requests targeting master branch
+      - master
 
 jobs:
   selenium-run:
     runs-on: ubuntu-latest
-    timeout-minutes: 30  # Adjust as needed
+    timeout-minutes: 30  # Adjust if necessary
 
     steps:
       # Step 1: Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Fetch all history to avoid shallow clone issues
-          submodules: true  # If using submodules, fetch them
 
-      # Step 2: Set up JDK and Maven
-      - name: Set up JDK and Maven
-        uses: actions/setup-java@v3
-        with:
-          java-version: '22'  # Use the appropriate JDK version for your project
-          distribution: 'temurin'
+      # Step 2: Set up JDK, Maven, and other dependencies
+      - name: Set up JDK 17 and Maven
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jdk
+          sudo apt-get install -y maven
+          java -version
+          mvn -v
 
-      # Step 3: Install Browser Dependencies (optional, adjust based on the browser you want)
+      # Step 3: Install necessary browser dependencies for Selenium
       - name: Install Browser Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-0 libgbm-dev libx11-dev google-chrome-stable firefox
-          google-chrome --version
-          firefox --version
+          sudo apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev build-essential xvfb
+          sudo apt-get install -y libcurl3-gnutls libnspr4 libnss3 xdg-utils fonts-liberation libasound2-dev
+          sudo apt-get install -y libgconf-2-4 libdbus-1-3 libx11-xcb1 libxkbcommon0
 
-      # Step 4: Show Current Directory and List of Files
-      - name: Show Current Directory and Files
+        #Install Google Chrome
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb
+          sudo apt-get install -y google-chrome-stable
+          
+        #Install Fluxbox and Xvfb for headless operation
+          sudo apt-get -y install fluxbox
+          Xvfb :99 &
+
+      # Step 4: Set up the environment for the tests to run
+      - name: Set up Virtual Display and Checkout
         run: |
-          pwd     # Show the current working directory
-          ls -la  # List all files to check for missing ones
+          # Set up X virtual framebuffer
+          Xvfb :99 -screen 0 1280x1024x24 &
 
-      # Step 5: Build Maven Project and Run Selenium Tests
-      - name: Build and Test with Maven
+          # Checkout the repository
+          git config --global advice.detachedHead false
+          git checkout ${{ github.sha }}
+
+      # Step 5: Build and run tests using Maven
+      - name: Run Maven Build and Tests
         run: |
-          mvn clean    # Clean the project
-          mvn test             # Run tests
+          mvn clean
+          mvn test
 
-      # Step 6: Upload Test Results (if generated)
-#      - name: Upload Test Results
-#        uses: actions/upload-artifact@v3   # Updated to v3
-#        with:
-#          name: test-results
-#          path: target/surefire-reports  # Change the path if your reports are generated elsewhere
-#          retention-days: 10   # Optional retention days
-
-      # Step 7: Commit and push HTML report (if reports are generated in HTML)
-#      - name: Commit and push HTML report
+#      # Step 6: After script to handle the results and report generation
+#      - name: Handle Test Reports and Commit Results
 #        run: |
-#          git config --global user.name "Shady1997"
+#          # List all files in the target/chaintest directory
+#          echo "Listing all files in target/chaintest"
+#          ls -la target/chaintest
+#
+#          # Copy the index.html file to the project folder before commit
+#          cp target/chaintest/Index.html Index.html
+#
+#          # Set git config for commit
+#          git config --global user.name "shadyahmed9719"
 #          git config --global user.email "shadyahmed9719@gmail.com"
 #
-#          # Add only the HTML reports if necessary
-#          git add index.html
+#          # Add the HTML report and commit
+#          git add Index.html
 #          git commit -m "Update Selenium test report"
 #
-#          # Set the default pull behavior to rebase
+#          # Pull with rebase and push changes to the master branch
 #          git config pull.rebase true
-#
-#          # Pull with rebase and set conflict resolution strategy
 #          git pull --rebase=merges origin master
 #
-#          # commit changes of index file
-#          # git add . # Uncomment if necessary
-#          # git commit -m "update index file"
+#          # Reconfigure remote URL to push to the correct repository
+#          git remote remove origin
+#          git remote add origin https://shadyahmed9719:${{ secrets.GITLAB_TOKEN }}@gitlab.com/wahoopredict-misc/automated-testing.git
+#
 #          git push origin master
-
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#
+#      # Step 7: Publish the results to the public directory
+#      - name: Publish Test Results to Public Folder
+#        run: |
+#          mkdir -p public
+#          cp -r * public/
+#
+#    # Artifacts configuration
+#    artifacts:
+#      paths:
+#        - target/
+#        - target/screenshots/
+#        - target/surefire-reports/
+#        - target/allure-results/
+#      retention-days: 7
