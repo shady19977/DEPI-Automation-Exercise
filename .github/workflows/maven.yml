@@ -25,6 +25,8 @@ jobs:
           sudo apt-get install -y openjdk-17-jdk
           sudo apt-get install -y maven
           java -version
+          export DISPLAY=:0
+          export JAVA_TOOL_OPTIONS='-Djava.awt.headless=true'
           mvn -v
 
       # Step 3: Install necessary browser dependencies for Selenium
