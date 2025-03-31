@@ -45,7 +45,7 @@ jobs:
       # Step 5: Build Maven Project and Run Selenium Tests
       - name: Build and Test with Maven
         run: |
-          mvn clean install    # Clean and install the project
+          mvn clean    # Clean the project
           mvn test             # Run tests
 
       # Step 6: Upload Test Results (if generated)
