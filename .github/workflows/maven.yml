@@ -36,7 +36,7 @@ jobs:
           google-chrome --version
           firefox --version
 
-      # Step 4: Show Current Directory and List Files
+      # Step 4: Show Current Directory and List of Files
       - name: Show Current Directory and Files
         run: |
           pwd     # Show the current working directory
