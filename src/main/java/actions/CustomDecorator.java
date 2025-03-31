@@ -18,7 +18,6 @@ public class CustomDecorator implements WebElement {
         this.element = element;
     }
 
-
     // TODO: explicit wait until web element visibility
     public static void explicitWait(WebDriver driver, By element) {
         // explicit wait - to wait for the compose button to be click-able
