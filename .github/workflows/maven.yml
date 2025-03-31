@@ -3,32 +3,32 @@ name: Automation Exercise Tests
 on:
   push:
     branches:
-      - master
+      - master   # run on master branch push
   pull_request:
     branches:
-      - master
+      - master   # run on pull requests targeting master branch
 
 jobs:
   selenium-run:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 30  # Adjust as needed
 
     steps:
       # Step 1: Checkout the repository
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          submodules: true
+#      - name: Checkout Repository
+#        uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 0  # Fetch all history to avoid shallow clone issues
+#          submodules: true  # If using submodules, fetch them
 
       # Step 2: Set up JDK and Maven
       - name: Set up JDK and Maven
-        uses: actions/setup-java@v2  # Use v2 for compatibility
+        uses: actions/setup-java@v3
         with:
-          java-version: '11'
+          java-version: '11'  # Use the appropriate JDK version for your project
           distribution: 'temurin'
 
-      # Step 3: Install Browser Dependencies
+      # Step 3: Install Browser Dependencies (optional, adjust based on the browser you want)
       - name: Install Browser Dependencies
         run: |
           sudo apt-get update
@@ -36,39 +36,46 @@ jobs:
           google-chrome --version
           firefox --version
 
-      # Step 4: Check if test reports directory exists
-      - name: Check Test Reports Directory
+      # Step 4: Show Current Directory and List of Files
+      - name: Show Current Directory and Files
         run: |
-          echo "Checking the directory structure..."
-          ls -la
+          pwd     # Show the current working directory
+          ls -la  # List all files to check for missing ones
 
-      # Step 5: Build Maven Project and Run Tests
+      # Step 5: Build Maven Project and Run Selenium Tests
       - name: Build and Test with Maven
         run: |
-          mvn clean install
-          mvn test
+          mvn clean install    # Clean and install the project
+          mvn test             # Run tests
 
-      # Step 6: Check Test Reports Directory Again
-      - name: Check if Test Reports Exist
-        run: |
-          ls -la target/surefire-reports
+      # Step 6: Upload Test Results (if generated)
+#      - name: Upload Test Results
+#        uses: actions/upload-artifact@v3   # Updated to v3
+#        with:
+#          name: test-results
+#          path: target/surefire-reports  # Change the path if your reports are generated elsewhere
+#          retention-days: 10   # Optional retention days
 
-      # Step 7: Upload Test Results (Using actions/upload-artifact@v2)
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v2  # Use v2 for compatibility
-        with:
-          name: test-results
-          path: target/surefire-reports
+      # Step 7: Commit and push HTML report (if reports are generated in HTML)
+#      - name: Commit and push HTML report
+#        run: |
+#          git config --global user.name "Shady1997"
+#          git config --global user.email "shadyahmed9719@gmail.com"
+#
+#          # Add only the HTML reports if necessary
+#          git add index.html
+#          git commit -m "Update Selenium test report"
+#
+#          # Set the default pull behavior to rebase
+#          git config pull.rebase true
+#
+#          # Pull with rebase and set conflict resolution strategy
+#          git pull --rebase=merges origin master
+#
+#          # commit changes of index file
+#          # git add . # Uncomment if necessary
+#          # git commit -m "update index file"
+#          git push origin master
 
-      # Step 8: Commit and Push HTML Report
-      - name: Commit and Push HTML Report
-        run: |
-          git config --global user.name "Shady1997"
-          git config --global user.email "shadyahmed9719@gmail.com"
-
-          git add index.html
-          git commit -m "Update Selenium test report"
-          git pull --rebase=merges origin master
-          git push origin master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
