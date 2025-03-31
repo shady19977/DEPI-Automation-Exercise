@@ -60,6 +60,7 @@ public class DriverFactory
                 prefs.put("profile.password_manager_enabled", false);
                 prefs.put("profile.default_content_setting_values.notifications", 2);
                 chromeOptions.addArguments("start-maximized");
+                chromeOptions.addArguments("--headless");
                 chromeOptions.addArguments("--incognito");
                 chromeOptions.addArguments("--disable-web-security");
                 chromeOptions.addArguments("--no-proxy-server");
