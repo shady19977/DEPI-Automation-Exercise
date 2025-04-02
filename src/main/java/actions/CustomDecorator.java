@@ -1,5 +1,5 @@
 package actions;
-import org.jspecify.annotations.Nullable;
+//import org.jspecify.annotations.Nullable;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -54,29 +54,34 @@ public class CustomDecorator implements WebElement {
     }
 
     @Override
-    public @Nullable String getDomProperty(String name) {
-        return WebElement.super.getDomProperty(name);
-    }
-
-    @Override
-    public @Nullable String getDomAttribute(String name) {
-        return WebElement.super.getDomAttribute(name);
-    }
-
-    @Override
-    public @Nullable String getAttribute(String name) {
+    public String getAttribute(String name) {
         return "";
     }
 
-    @Override
-    public @Nullable String getAriaRole() {
-        return WebElement.super.getAriaRole();
-    }
+//    @Override
+//    public @Nullable String getDomProperty(String name) {
+//        return WebElement.super.getDomProperty(name);
+//    }
+//
+//    @Override
+//    public @Nullable String getDomAttribute(String name) {
+//        return WebElement.super.getDomAttribute(name);
+//    }
+//
+//    @Override
+//    public @Nullable String getAttribute(String name) {
+//        return "";
+//    }
 
-    @Override
-    public @Nullable String getAccessibleName() {
-        return WebElement.super.getAccessibleName();
-    }
+//    @Override
+//    public @Nullable String getAriaRole() {
+//        return WebElement.super.getAriaRole();
+//    }
+//
+//    @Override
+//    public @Nullable String getAccessibleName() {
+//        return WebElement.super.getAccessibleName();
+//    }
 
     @Override
     public boolean isSelected() {
