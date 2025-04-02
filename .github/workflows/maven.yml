@@ -51,6 +51,7 @@ jobs:
         run: |
           # Set up X virtual framebuffer
           Xvfb :99 -screen 0 1280x1024x24 &
+          export DISPLAY=:0.0
 
           # Checkout the repository
           git config --global advice.detachedHead false
