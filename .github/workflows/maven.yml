@@ -62,13 +62,6 @@ jobs:
           export DISPLAY=:99
           mvn clean test -Djava.awt.headless=false
 
-#      # Step 6: Upload Test Results (if generated)
-#      - name: Upload Test Results
-#        uses: actions/upload-artifact@v3   # Updated to v3
-#        with:
-#          name: test-results
-#          path: target/surefire-reports  # Change the path if your reports are generated elsewhere
-
       # Step 7: Commit and push HTML report (if reports are generated in HTML)
       - name: Commit and push HTML report
         run: |
@@ -86,10 +79,6 @@ jobs:
           
           # Pull with rebase and set conflict resolution strategy
           git pull --rebase=merges origin master  
-          
-          # commit changes of index file
-          # git add .
-          # git commit -m "update index file"
           git push origin master
 
         env:
