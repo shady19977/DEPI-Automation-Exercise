@@ -22,11 +22,8 @@ jobs:
       - name: Set up JDK 17 and Maven
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk
-          sudo apt-get install -y maven
+          sudo apt-get install -y openjdk-17-jdk maven
           java -version
-          export DISPLAY=:1
-          export JAVA_TOOL_OPTIONS='-Djava.awt.headless=true'
           mvn -v
 
       # Step 3: Install necessary browser dependencies for Selenium
@@ -39,30 +36,31 @@ jobs:
           
           # Install Google Chrome
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo dpkg -i google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get install -f -y
           sudo apt-get install -y google-chrome-stable
           
           # Install Fluxbox and Xvfb for headless operation
-          sudo apt-get -y install fluxbox
-          Xvfb :99 &
+          sudo apt-get install -y fluxbox x11-utils
 
-      # Step 4: Set up the environment for the tests to run
-      - name: Set up Virtual Display and Checkout
+      # Step 4: Set up Virtual Display
+      - name: Set up Xvfb Virtual Display
         run: |
+          # Ensure any existing Xvfb process is stopped
           killall Xvfb || true
-          # Set up X virtual framebuffer
-          Xvfb :99 -screen 0 1280x1024x24 &
-          export DISPLAY=:99
+          rm -f /tmp/.X99-lock
 
-          # Checkout the repository
-          git config --global advice.detachedHead false
-          git checkout ${{ github.sha }}
+          # Start a new Xvfb instance
+          Xvfb :99 -screen 0 1280x1024x24 &
+
+          # Set the DISPLAY environment variable
+          export DISPLAY=:99
+          echo "DISPLAY is set to $DISPLAY"
 
       # Step 5: Build and run tests using Maven
       - name: Run Maven Build and Tests
         run: |
-          mvn clean 
-          mvn test
+          export DISPLAY=:99
+          mvn clean test -Djava.awt.headless=false
 
 #      # Step 6: After script to handle the results and report generation
 #      - name: Handle Test Reports and Commit Results
