@@ -72,8 +72,10 @@ jobs:
       # Step 7: Commit and push HTML report (if reports are generated in HTML)
       - name: Commit and push HTML report
         run: |
-          git config --global user.name "Shady1997"
-          git config --global user.email "shadyahmed9719@gmail.com"
+          git config --global user.name "Shady19977"
+          git config --global user.email "shadyahmedmohamed97@gmail.com"
+          git remote remove origin
+          git remote add origin https://shady19977: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@github.com/shady19977/DEPI-Automation-Exercise.git
 
           # Add only the HTML reports if necessary
           git add index.html
