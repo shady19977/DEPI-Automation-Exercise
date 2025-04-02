@@ -38,7 +38,7 @@ public class TestBase {
     @BeforeSuite
     public void beforeSuite() throws Exception {
         // TODO: initialize the HtmlReporter
-        htmlReporter = new ExtentSparkReporter(System.getProperty("user.dir") + "/testReport.html");
+        htmlReporter = new ExtentSparkReporter(System.getProperty("user.dir") + "/index.html");
 
         //initialize ExtentReports and attach the HtmlReporter
         extent = new ExtentReports();

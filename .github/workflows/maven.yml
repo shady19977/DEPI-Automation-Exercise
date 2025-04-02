@@ -62,51 +62,48 @@ jobs:
           export DISPLAY=:99
           mvn clean test -Djava.awt.headless=false
 
-#      # Step 6: After script to handle the results and report generation
-#      - name: Handle Test Reports and Commit Results
-#        run: |
-#          # List all files in the target/chaintest directory
-#          echo "Listing all files in target/chaintest"
-#          ls -la target/chaintest
-#
-#          # Copy the index.html file to the project folder before commit
-#          cp target/chaintest/Index.html Index.html
-#
-#          # Set git config for commit
-#          git config --global user.name "shadyahmed9719"
-#          git config --global user.email "shadyahmed9719@gmail.com"
-#
-#          # Add the HTML report and commit
-#          git add Index.html
-#          git commit -m "Update Selenium test report"
-#
-#          # Pull with rebase and push changes to the master branch
-#          git config pull.rebase true
-#          git pull --rebase=merges origin master
-#
-#          # Reconfigure remote URL to push to the correct repository
-#          git remote remove origin
-#          git remote add origin https://shadyahmed9719:${{ secrets.GITLAB_TOKEN }}@gitlab.com/wahoopredict-misc/automated-testing.git
-#
-#          git push origin master
-#
-#      # Step 7: Publish the results to the public directory
-#      - name: Publish Test Results to Public Folder
-#        run: |
-#          mkdir -p public
-#          cp -r * public/
-#
-#    # Artifacts configuration
-#    outputs:
-#      junit-reports: target/surefire-reports/junitreports/*.xml
-#      test-results: target/screenshots/
-#      allure-reports: target/allure-results/
-#
-#    # Retaining artifacts for 7 days
-#    artifacts:
-#      paths:
-#        - target/
-#        - target/screenshots/
-#        - target/surefire-reports/
-#        - target/allure-results/
-#      retention-days: 7
+            # Step 6: Upload Test Results (if generated)
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3   # Updated to v3
+        with:
+          name: test-results
+          path: target/surefire-reports  # Change the path if your reports are generated elsewhere
+
+      # Step 7: Commit and push HTML report (if reports are generated in HTML)
+      - name: Commit and push HTML report
+        run: |
+          git config --global user.name "Shady1997"
+          git config --global user.email "shadyahmed9719@gmail.com"
+
+          # Add only the HTML reports if necessary
+          git add index.html
+          git commit -m "Update Selenium test report"
+          
+          # Set the default pull behavior to rebase
+          git config pull.rebase true
+          
+          # Pull with rebase and set conflict resolution strategy
+          git pull --rebase=merges origin master  
+          
+          # commit changes of index file
+          # git add .
+          # git commit -m "update index file"
+          git push origin master
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # Artifacts configuration
+    outputs:
+      junit-reports: target/surefire-reports/junitreports/*.xml
+      test-results: target/screenshots/
+      allure-reports: target/allure-results/
+
+    # Retaining artifacts for 7 days
+    artifacts:
+      paths:
+        - target/
+        - target/screenshots/
+        - target/surefire-reports/
+        - target/allure-results/
+      retention-days: 7
